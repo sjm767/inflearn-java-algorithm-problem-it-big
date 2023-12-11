@@ -3,70 +3,56 @@ package inflearn.java.algorithm.problem.solving.it.big.ch2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * 6. 문서 도난
  */
 public class DocumentSteal {
-
-  static class Person implements  Comparable<Person>{
-    String name;
-
-    int minute;
-
-    public Person(String name, int minute) {
+  static class Info implements Comparable<Info>{
+    public String name;
+    public int time;
+    Info(String name, int time){
       this.name = name;
-      this.minute = minute;
+      this.time = time;
     }
-
     @Override
-    public int compareTo(Person o) {
-      return this.minute - o.minute;
+    public int compareTo(Info ob){
+      return this.time - ob.time;
     }
   }
+  public static int getTime(String time){
+    int H = Integer.parseInt(time.split(":")[0]);
+    int M = Integer.parseInt(time.split(":")[1]);
+    return H*60+M;
+  }
   public static String[] solution(String[] reports, String times){
-    String[] answer = {};
-    List<String> result = new ArrayList<>();
-    int startH;
-    int startM;
-    int endH;
-    int endM;
-
-    String[] time = times.split(" ");
-    String[] startTime = time[0].split(":");
-    String[] endTime = time[1].split(":");
-
-    startH = Integer.parseInt(startTime[0]);
-    startM = (startH * 60) + Integer.parseInt(startTime[1]);
-    endH = Integer.parseInt(endTime[0]);
-    endM = (endH * 60) + Integer.parseInt(endTime[1]);
-
-    List<Person> personList = new ArrayList<>();
-
-    for (String r : reports){
-      String[] s = r.split(" ");
-      int pHour = Integer.parseInt(s[1].split(":")[0]);
-      int pMinute = (pHour * 60) + Integer.parseInt(s[1].split(":")[1]);
-
-      personList.add(new Person(s[0], pMinute));
+    //String[] answer ={};
+    ArrayList<Info> tmp = new ArrayList<>();
+    for(String x : reports){
+      String a = x.split(" ")[0];
+      String b = x.split(" ")[1];
+      tmp.add(new Info(a, getTime(b)));
     }
-
-    Collections.sort(personList);
-
-    for (Person person : personList){
-      if (person.minute >= startM && person.minute <= endM) {
-        result.add(person.name);
+    Collections.sort(tmp);
+    int s = getTime(times.split(" ")[0]);
+    int e = getTime(times.split(" ")[1]);
+    ArrayList<String> res = new ArrayList<>();
+    for(Info ob : tmp){
+      if(ob.time >= s && ob.time <= e){
+        res.add(ob.name);
       }
+      if(ob.time > e) break;
     }
-
-    return result.toArray(answer);
+    String[] answer = new String[res.size()];
+    for(int i = 0; i < res.size(); i++){
+      answer[i] = res.get(i);
+    }
+    return answer;
   }
 
   public static void main(String[] args){
     System.out.println(Arrays.toString(solution(new String[]{"john 15:23", "daniel 09:30", "tom 07:23", "park 09:59", "luis 08:57"}, "08:33 09:45")));
-    System.out.println(
-        Arrays.toString(solution(new String[]{"ami 12:56", "daniel 15:00", "bob 19:59", "luis 08:57", "bill 17:35", "tom 07:23", "john 15:23", "park 09:59"}, "15:01 19:59")));
+    System.out.println(Arrays.toString(solution(new String[]{"ami 12:56", "daniel 15:00", "bob 19:59", "luis 08:57", "bill 17:35", "tom 07:23", "john 15:23", "park 09:59"}, "15:01 19:59")));
     System.out.println(Arrays.toString(solution(new String[]{"cody 14:20", "luis 10:12", "alice 15:40", "tom 15:20", "daniel 14:50"}, "14:20 15:20")));
   }
 }

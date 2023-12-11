@@ -1,74 +1,42 @@
 package inflearn.java.algorithm.problem.solving.it.big.ch2;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.HashSet;
 
 /**
  * 5. 회장 선거
  */
 public class ChairmanElection {
 
-  private static void addSupporter(Map<String,List<String>> supporterMap,String key, String value){
-    if(supporterMap.containsKey(key)){
-      supporterMap.get(key).add(value);
-    }else{
-      List<String> list = new ArrayList<>();
-      list.add(value);
-
-      supporterMap.put(key, list);
-    }
-
-  }
   public static String solution(String[] votes, int k){
     String answer = " ";
-
-    Map<String, Integer> candidateMap = new HashMap<>();
-    Map<String, List<String>> supporterMap = new HashMap<>();
-    Map<String, Integer> presentMap = new HashMap<>();
-    List<String> result = new ArrayList<>();
-
-    for (String v : votes) {
-      String[] s = v.split(" ");
-      String supporter = s[0];
-      String candidate = s[1];
-
-      candidateMap.put(candidate, candidateMap.getOrDefault(candidate,0)+1);
-      addSupporter(supporterMap, candidate, supporter);
-
+    HashMap<String, HashSet<String>> voteHash = new HashMap<>();
+    HashMap<String, Integer> candidate = new HashMap<>();
+    HashMap<String, Integer> present = new HashMap<>();
+    for(String x : votes){
+      String a = x.split(" ")[0];
+      String b = x.split(" ")[1];
+      voteHash.putIfAbsent(a, new HashSet<String>());
+      voteHash.get(a).add(b);
+      candidate.put(b, candidate.getOrDefault(b, 0) + 1);
     }
-
-
-    for(String candidate : candidateMap.keySet()){
-      Integer ct = candidateMap.get(candidate);
-
-
-      if(ct >= k){
-        List<String> supporters = supporterMap.get(candidate);
-
-        for (String s : supporters) {
-          presentMap.put(s,presentMap.getOrDefault(s,0)+1);
-        }
+    int max=Integer.MIN_VALUE;
+    for(String a : voteHash.keySet()){
+      int cnt = 0;
+      for(String b : voteHash.get(a)){
+        if(candidate.get(b) >= k) cnt++;
       }
+      present.put(a, cnt);
+      max = Math.max(max, cnt);
     }
-    int max = Integer.MIN_VALUE;
-    for (String p : presentMap.keySet()) {
-      Integer ct = presentMap.get(p);
-      if(max < ct){
-        max = ct;
-      }
+    ArrayList<String> tmp = new ArrayList<>();
+    for(String name : present.keySet()){
+      if(present.get(name) == max) tmp.add(name);
     }
-    for (String p : presentMap.keySet()) {
-      if (presentMap.get(p) == max) {
-        result.add(p);
-      }
-    }
-
-    Collections.sort(result);
-    return result.get(0);
+    tmp.sort((a, b) -> a.compareTo(b));
+    answer = tmp.get(0);
+    return answer;
   }
 
 
