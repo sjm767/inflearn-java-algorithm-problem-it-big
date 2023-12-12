@@ -1,35 +1,24 @@
 package inflearn.java.algorithm.problem.solving.it.big.ch3;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 /**
  * 1. 최대 길이 연속 수열
  */
 public class MaxLengthProgression {
   public static int solution(int[] nums){
-    int answer = 1;
-    Integer[] uniqueNums;
-    Set<Integer> set = new TreeSet<>();
-
-
-    for (Integer n : nums) {
-      set.add(n);
-    }
-    uniqueNums = set.toArray(new Integer[0]);
-    int lastNum = uniqueNums[0];
-
-    for (int i = 1; i < uniqueNums.length; i++) {
-      int current = uniqueNums[i];
-      if(current - lastNum != 1){
-        break;
-      }else{
-        answer++;
-        lastNum = current;
+    int answer = 0;
+    HashSet<Integer> set = new HashSet<>();
+    for(int x : nums) set.add(x);
+    for(int x : set){
+      if(set.contains(x - 1)) continue;
+      int cnt = 0;
+      while(set.contains(x)){
+        cnt++;
+        x++;
       }
+      answer = Math.max(answer, cnt);
     }
-
-
     return answer;
   }
 
