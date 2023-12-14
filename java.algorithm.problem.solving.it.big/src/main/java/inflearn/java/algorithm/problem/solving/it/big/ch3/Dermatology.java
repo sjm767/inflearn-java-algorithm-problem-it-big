@@ -1,5 +1,6 @@
 package inflearn.java.algorithm.problem.solving.it.big.ch3;
 
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -15,20 +16,39 @@ public class Dermatology {
   }
   public static int solution(int[] laser, String[] enter){
     int answer = 0;
-    Queue<Integer> queue = new PriorityQueue<>();
+    int n = enter.length;
+    int[][] customers = new int[n][2];
+    Queue<Integer> queue = new LinkedList<>();
 
-    for (int i = 0; i < enter.length; i++) {
-      String[] e = enter[i].split(" ");
-      int currentTime = getTime(e[0]);
-      int length = laser[Integer.parseInt(e[1])];
-      int endTime = currentTime + length;
+    int idx = 0;
+    for (String e : enter) {
+      String[] eSplit = e.split(" ");
+      int enterTime = getTime(eSplit[0]);
+      int laserType = Integer.parseInt(eSplit[1]);
 
+      customers[idx][0] = enterTime;
+      customers[idx][1] = laserType;
+      idx++;
+    }
 
-      while (!queue.isEmpty() && queue.peek() <= currentTime) {
-        queue.poll();
+    int finishTime = customers[0][0];
+
+    idx = 0;
+    for (int currentTime = customers[0][0]; currentTime <=1200; currentTime++) {
+      if(idx < n && customers[idx][0] == currentTime){
+        if(queue.isEmpty() && finishTime < currentTime){
+          finishTime = currentTime;
+        }
+        queue.add(customers[idx][1]);
+        idx++;
       }
-      answer = Math.max(answer, queue.size());
-      queue.add(endTime);
+
+      if(finishTime == currentTime && !queue.isEmpty()){
+        Integer q = queue.poll();
+        finishTime = currentTime + laser[q];
+      }
+      answer = Math.max(queue.size(), answer);
+
     }
 
     return answer;
