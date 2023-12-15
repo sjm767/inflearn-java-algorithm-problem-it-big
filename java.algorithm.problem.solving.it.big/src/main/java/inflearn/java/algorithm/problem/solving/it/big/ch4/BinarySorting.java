@@ -1,69 +1,28 @@
 package inflearn.java.algorithm.problem.solving.it.big.ch4;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 1. 이진수 정렬
  */
 public class BinarySorting {
 
-  public static String getBinaryNum(int n){
-    StringBuilder sb = new StringBuilder();
-
-    while(n/2 !=0){
-      sb.insert(0,n%2);
-      n=n/2;
-    }
-
-    sb.insert(0, n % 2);
-
-    return sb.toString();
-  }
-
-  static class Number implements Comparable<Number>{
-    int orgNum;
-    int binaryCount;
-
-    public Number(int orgNum, int binaryCount) {
-      this.orgNum = orgNum;
-      this.binaryCount = binaryCount;
-    }
-
-    @Override
-    public int compareTo(Number o) {
-      if (this.binaryCount == o.binaryCount) {
-        return this.orgNum - o.orgNum;
-      }
-      return this.binaryCount - o.binaryCount;
-    }
-  }
   public static int[] solution(int[] nums){
     int[] answer = new int[nums.length];
-    List<String> binaryList = new ArrayList<>();
-    List<Number> numList = new ArrayList<>();
-
-    for (int n : nums) {
-      binaryList.add(Integer.toBinaryString(n));
-    }
-
-    for (int i=0;i<binaryList.size();i++) {
-      int c = 0;
-      for (Character cc : binaryList.get(i).toCharArray()) {
-        if(cc == '1'){
-          c++;
-        }
+    int[][] res = new int[nums.length][2];
+    for(int i = 0; i < nums.length; i++){
+      int cnt = 0;
+      int tmp = nums[i];
+      while(tmp > 0){
+        cnt += (tmp % 2);
+        tmp = tmp / 2;
       }
-
-      numList.add(new Number(nums[i], c));
+      res[i][0] = nums[i];
+      res[i][1] = cnt;
     }
-
-    Collections.sort(numList);
-
-    for (int i = 0; i < numList.size(); i++) {
-      answer[i] = numList.get(i).orgNum;
+    Arrays.sort(res, (a, b) -> a[1] == b[1] ? a[0] - b[0] : a[1] - b[1]);
+    for(int i = 0; i < res.length; i++){
+      answer[i] = res[i][0];
     }
     return answer;
   }

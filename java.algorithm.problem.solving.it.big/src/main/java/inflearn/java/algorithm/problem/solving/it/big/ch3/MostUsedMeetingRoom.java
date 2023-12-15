@@ -1,12 +1,14 @@
 package inflearn.java.algorithm.problem.solving.it.big.ch3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.TreeSet;
 
 /**
  * 7. 가장 많이 사용된 회의실
@@ -30,64 +32,33 @@ public class MostUsedMeetingRoom {
 
   public static int solution(int n, int[][] meetings){
     int answer = 0;
-    int m = meetings.length;
+    int[] res = new int[n];
+    PriorityQueue<int[]> ends = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+    TreeSet<Integer> rooms = new TreeSet<>();
+    for(int i = 0; i < n; i++) rooms.add(i);
+    Arrays.sort(meetings, (a, b) -> a[0] - b[0]);
 
-    Map<Integer, Integer> roomState = new HashMap<>();
-    Map<Integer, Integer> roomUsedCt = new HashMap<>();
-    Map<Integer, Integer> meetingMap = new HashMap<>();
-
-    for (int i = 0; i < n; i++) {
-      roomState.put(i, 0);
-      roomUsedCt.put(i, 0);
-    }
-
-    for (int i = 0; i < m; i++) {
-      meetingMap.put(meetings[i][0],meetings[i][1]);
-    }
-
-    Queue<Meeting> queue = new PriorityQueue<>();
-
-    int time = 0;
-    for (;; time++) {
-      Integer mtEnd = meetingMap.get(time);
-
-      if (meetingMap.size() == 0 && queue.isEmpty()) {
-        break;
+    for(int[] m : meetings){
+      while(!ends.isEmpty() && ends.peek()[0] <= m[0]) rooms.add(ends.poll()[1]);
+      if(!rooms.isEmpty()){
+        int room = rooms.pollFirst();
+        res[room]++;
+        ends.add(new int[]{m[1], room});
       }
-
-      if(mtEnd != null){
-        queue.add(new Meeting(time, mtEnd));
-        meetingMap.remove(time);
-      }
-
-      List<Integer> emptyRooms = new ArrayList<>();
-      for (Integer rs : roomState.keySet()) {
-        Integer endTime = roomState.get(rs);
-        if(endTime <= time){
-          emptyRooms.add(rs);
-        }
-      }
-
-      for (Integer em : emptyRooms) {
-        if (!queue.isEmpty()) {
-          Meeting mt = queue.poll();
-          int length = mt.end - mt.start;
-          mt.start = time;
-          mt.end = time + length;
-          roomState.put(em, mt.end);
-          roomUsedCt.put(em,roomUsedCt.getOrDefault(em,0)+1);
-        }
+      else{
+        int[] e = ends.poll();
+        res[e[1]]++;
+        ends.add(new int[]{e[0] + (m[1] - m[0]), e[1]});
       }
     }
 
-    int max = Integer.MIN_VALUE;
-    for (Integer key : roomUsedCt.keySet()) {
-      if (max < roomUsedCt.get(key)) {
-        max = roomUsedCt.get(key);
-        answer = key;
+    int maxi = 0;
+    for(int i = 0; i < n; i++){
+      if(res[i] > maxi){
+        maxi = res[i];
+        answer = i;
       }
     }
-
     return answer;
   }
 

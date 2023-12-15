@@ -50,58 +50,24 @@ public class CPUScheduling{
   }
   public static int[] solution(int[][] tasks){
     int n = tasks.length;
-    int min = Integer.MAX_VALUE;
-    int idx = 0;
     int[] answer = new int[n];
-
-    Map<Integer, List<Task>> taskMap = new HashMap<>();
-    Map<Task, Integer> taskIdx = new HashMap<>();
-    for (int i = 0; i < n; i++) {
-      List<Task> taskList = taskMap.getOrDefault(tasks[i][0], new ArrayList<>());
-      Task task = new Task(tasks[i][0], tasks[i][1]);
-      taskList.add(task);
-      taskIdx.put(task, i);
-
-      taskMap.put(tasks[i][0], taskList);
-      min = Math.min(min, task.startTime);
+    LinkedList<int[]> programs = new LinkedList<>();
+    for(int i = 0; i < n; i++){
+      programs.add(new int[]{tasks[i][0], tasks[i][1], i});
     }
-
-    int time = min ;
-    int ft = min;
-    Queue<Task> queue = new PriorityQueue<>();
-    for (;; time++) {
-      List<Task> taskList = taskMap.get(time);
-
-      if(taskList != null){
-        for (Task t : taskList) {
-          queue.add(t);
-        }
+    programs.sort((a, b) -> a[0] - b[0]);
+    PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+    int fT = 0, idx = 0;
+    while(!programs.isEmpty() || !pq.isEmpty()){
+      if(pq.isEmpty()) fT = Math.max(fT, programs.peek()[0]);
+      while(!programs.isEmpty() && programs.peek()[0] <= fT){
+        int[] x = programs.pollFirst();
+        pq.add(new int[]{x[1], x[2]});
       }
-
-      if(taskIdx.size() == 0){
-        time = ft;
-        if (queue.isEmpty()) {
-          break;
-        }
-      }
-      if(ft < time){
-        ft = time;
-      }
-
-      if(ft == time && !queue.isEmpty()){
-        Task t = queue.poll();
-        ft += t.processTime;
-
-        answer[idx++] = taskIdx.get(t);
-        taskIdx.remove(t);
-      }
+      int[] ex = pq.poll();
+      fT = fT + ex[0];
+      answer[idx++] = ex[1];
     }
-
-//    while (!queue.isEmpty()) {
-//      Task task = queue.poll();
-//      System.out.println(task.startTime+","+task.processTime);
-//    }
-
     return answer;
   }
 
