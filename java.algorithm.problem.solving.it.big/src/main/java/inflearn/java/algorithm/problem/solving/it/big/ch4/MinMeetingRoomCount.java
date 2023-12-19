@@ -24,30 +24,6 @@ public class MinMeetingRoomCount {
       answer = Math.max(answer, cnt);
     }
     return answer;
-//    int answer = 0;
-//    int n = meetings.length;
-//    int max = Integer.MIN_VALUE;
-//    Arrays.sort(meetings, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
-//    Queue<Integer> queue = new PriorityQueue<>();
-//
-//    for (int i = 0; i < n; i++) {
-//      int s = meetings[i][0];
-//      int e = meetings[i][1];
-//
-//      if (queue.isEmpty()) {
-//        queue.add(e);
-//        max = Math.max(queue.size(), max);
-//      } else {
-//        if(queue.peek() > s){
-//          queue.add(e);
-//          max = Math.max(queue.size(), max);
-//        } else{
-//          queue.poll();
-//          queue.add(e);
-//        }
-//      }
-//    }
-//    return max;
   }
 
   public static void main(String[] args){
